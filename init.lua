@@ -1,3 +1,4 @@
+--
 --[[
 
 =====================================================================
@@ -161,6 +162,10 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+vim.o.shiftwidth = 4
+vim.o.tabstop = 4
+vim.o.expandtab = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -170,7 +175,10 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>w', ':w<Enter>', { desc = 'Save file' })
+vim.keymap.set('n', '<leader>rc', ':e $MYVIMRC<Enter>', { desc = 'Opens vimrc file' })
 
+require 'custom.keybinds'
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -663,9 +671,10 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
+        clangd = {},
+        pyright = {},
+        gopls = {},
+        zk = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -930,6 +939,20 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  {
+
+    'm4xshen/autoclose.nvim',
+    event = 'InsertEnter', -- Only load when entering insert mode
+    config = function()
+      require('autoclose').setup {
+        -- Example configurations (adjust as needed)
+        disable_filetypes = { 'TelescopePrompt' },
+        fast_pair = {
+          enabled = true,
+        },
+      }
+    end,
+  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -956,6 +979,14 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
+  require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.gitsigns',
+  require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.lint',
+  require 'kickstart.plugins.neo-tree',
+  require 'custom.plugins.init',
+
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -976,7 +1007,6 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
